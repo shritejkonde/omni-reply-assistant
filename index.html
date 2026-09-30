@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Omnichannel Reply Assistant</title>
+<style>
+body{font-family:Arial,sans-serif;max-width:640px;margin:30px auto;padding:0 16px;color:#222}
+h1{font-size:22px} textarea,select,button{width:100%;padding:10px;margin-top:8px;font-size:15px;box-sizing:border-box}
+button{background:#f15a22;color:#fff;border:0;cursor:pointer} #out{white-space:pre-wrap;background:#f4f4f4;padding:12px;margin-top:14px;display:none}
+small{color:#666}
+</style></head><body>
+<h1>Omnichannel Reply Assistant</h1>
+<small>Draft customer replies for SMS, WhatsApp or Email.</small>
+<textarea id="msg" rows="4" placeholder="Paste customer message, e.g. My order has not arrived"></textarea>
+<select id="ch"><option value="sms">SMS</option><option value="whatsapp">WhatsApp</option><option value="email">Email</option></select>
+<button onclick="go()">Generate reply</button>
+<div id="out"></div>
+<script>
+async function go(){
+  const o=document.getElementById('out');
+  const r=await fetch('/api/reply',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({message:document.getElementById('msg').value,channel:document.getElementById('ch').value})});
+  const d=await r.json(); o.style.display='block';
+  o.textContent=d.error?d.error:d.reply+"\n\n["+d.intent+" | "+d.mode+" | "+d.length+"/"+d.limit+" chars]";
+}
+</script></body></html>
